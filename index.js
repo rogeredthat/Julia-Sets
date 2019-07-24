@@ -1,4 +1,3 @@
-let RESOLUTION = 1000;
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100000);
 let renderer = new THREE.WebGLRenderer({
@@ -12,6 +11,7 @@ let period = 120;
 let currentC = 0;
 let nextC = 1;
 let material;
+let geometry;
 let sketch;
 
 let render = () => {
@@ -31,7 +31,6 @@ let update = () => {
     console.log("interpolating", transitions[currentC], " to ", transitions[nextC], " with alpha ", frame/60); 
     newC = transitions[currentC].lerp(transitions[nextC], frame/60);
     material.uniforms.c.value = newC;
-    //material.uniforms.c.value.y = y;
 }
 
 transitions = [
@@ -48,36 +47,35 @@ transitions = [
 
 
 
-let geometry = new THREE.PlaneBufferGeometry(2, 2, RESOLUTION, RESOLUTION);
-let textureLoader = new THREE.TextureLoader();
-textureLoader.setCrossOrigin('');
-textureLoader.load('http://i.imgur.com/3tU4Vig.jpg', (e) => {    
-    let uniforms = {
-        bounds: {
-            type: 'v4',
-            value: new THREE.Vector4(0, innerHeight, 0, innerWidth)
-        },
-        c: {
-            type: 'v2',
-            value: new THREE.Vector2(-0.835, -0.2321)
-        },
-        RESOLUTION: {
-            type: 'f',
-            value: RESOLUTION
-        }
-    }
-    material = new THREE.ShaderMaterial({
-        transparent: true,
-        uniforms: uniforms,
-        vertexShader: $("#vs").text(),
-        fragmentShader: $("#fs").text(),
-    });
-
-    sketch = new THREE.Mesh(geometry, material);
-    scene.add(sketch);
-
-    render();
+geometry = new THREE.PlaneBufferGeometry(2, 2, innerWidth, innerHeight);
+let uniforms = {
+	aspect: {
+	    type: 'f',
+	    value: innerWidth / innerHeight
+	},
+	c: {
+	    type: 'v2',
+	    value: new THREE.Vector2(0, 0)
+	},
+}
+material = new THREE.ShaderMaterial({
+transparent: true,
+uniforms: uniforms,
+vertexShader: $("#vs").text(),
+fragmentShader: $("#fs").text(),
 });
+
+sketch = new THREE.Mesh(geometry, material);
+scene.add(sketch);
+
+render();
+
+onresize = (e) => {
+    renderer.setSize(innerWidth, innerHeight);
+	geometry = new THREE.PlaneBufferGeometry(1,1,innerWidth, innerHeight);
+    material.uniforms.aspect.value = innerWidth / innerHeight;
+    console.log("Resize");
+}
 
 
 onmousemove = (e) => {

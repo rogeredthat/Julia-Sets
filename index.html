@@ -17,13 +17,12 @@
         varying vec3 pos;
         varying vec2 vUv;
         uniform vec2 c;   
-        uniform vec4 bounds; 
-        uniform float RESOLUTION;
+        uniform float aspect; 
         varying float col;
         void main() {
             pos = position;
             vUv = uv;
-            float x =  -1.5 + (vUv.x * 3.);
+            float x =  -aspect + (vUv.x * 2. * aspect);
             float y = -1. + (vUv.y * 2.);
             int iters = 0; 
             for(int j = 0; j < 255; j++) {
