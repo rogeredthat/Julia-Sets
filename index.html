@@ -19,13 +19,15 @@
         uniform vec2 c;   
         uniform float aspect; 
         varying float col;
+        uniform vec2 center;
+        uniform float size;
         void main() {
             pos = position;
             vUv = uv;
-            float x =  -aspect + (vUv.x * 2. * aspect);
-            float y = -1. + (vUv.y * 2.);
+            float x = aspect * (center.x - size) + (vUv.x * 2. * size * aspect);
+            float y = (center.y - size) + (vUv.y * 2. * size);
             int iters = 0; 
-            for(int j = 0; j < 255; j++) {
+            for(int j = 0; j < 5000; j++) {
                 if (x * x + y * y > 4. && iters == 0) {
                     iters = j;
                     break;
@@ -35,7 +37,7 @@
                 x = xtemp + c.x;
             }
 
-            col = float(iters) / 255.;
+            col = float(iters) / 500.;
             gl_Position = vec4(position, 1.0);
         }
     </script>

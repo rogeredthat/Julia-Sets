@@ -1,3 +1,7 @@
+let DRAGSTART;
+let INITCENTER;
+let DRAGGING = false;
+let MOUSEDOWN = false;
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100000);
 let renderer = new THREE.WebGLRenderer({
@@ -15,9 +19,7 @@ let geometry;
 let sketch;
 
 let render = () => {
-    //update();
     renderer.render(scene, camera);
-    requestAnimationFrame(render);
 }
 
 let update = () => {
@@ -57,6 +59,14 @@ let uniforms = {
 	    type: 'v2',
 	    value: new THREE.Vector2(0, 0)
 	},
+    center: {
+        type: 'v2',
+        value: new THREE.Vector2(0, 0)
+    },
+    size: {
+        type: 'f',
+        value: 1.
+    }
 }
 material = new THREE.ShaderMaterial({
 transparent: true,
@@ -77,7 +87,47 @@ onresize = (e) => {
     console.log("Resize");
 }
 
+onmousewheel = (e) => {
+    if(e.deltaY > 0)
+        material.uniforms.size.value += 0.1 * material.uniforms.size.value;
+    else 
+        material.uniforms.size.value -= 0.1 * material.uniforms.size.value;
+    material.uniforms.size.value = Math.max(0, Math.min(1, material.uniforms.size.value));
+    render();
+}
+
+onclick = (e) => {
+    if (DRAGGING) {
+        DRAGGING = false;
+        return;
+    }
+    material.uniforms.c.value = new THREE.Vector2((e.pageX - innerWidth / 2) * 2 / innerWidth, (innerHeight / 2 - e.pageY) * 2 / innerHeight);
+    render();
+}
+
+onmousedown = (e) => {
+    MOUSEDOWN = true;
+    DRAGSTART = new THREE.Vector2(e.pageX, e.pageY);
+    INITCENTER = material.uniforms.center.value.clone();
+}
 
 onmousemove = (e) => {
-    material.uniforms.c.value = new THREE.Vector2((e.pageX - innerWidth / 2) * 2 / innerWidth, (innerHeight / 2 - e.pageY) * 2 / innerHeight);
+    if(MOUSEDOWN) {
+        DRAGGING = true;
+        let current = new THREE.Vector2(e.pageX, e.pageY);
+        let move = current.sub(DRAGSTART);
+        move.y *= -1;
+        move = move.divideScalar(innerHeight / material.uniforms.size.value);
+        console.log("Move: ", move.x, move.y);
+        console.log("INIT: ", INITCENTER.x, INITCENTER.y);
+        material.uniforms.center.value.subVectors(INITCENTER, move);
+        //console.log("Value: ", value.x, value.y);
+        render();
+    }
+}
+
+onmouseup = (e) => {
+    MOUSEDOWN = false;
+    DRAGSTART = null;
+    INITCENTER = null;
 }
