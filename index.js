@@ -96,38 +96,38 @@ onmousewheel = (e) => {
     render();
 }
 
-onclick = (e) => {
-    if (DRAGGING) {
-        DRAGGING = false;
-        return;
-    }
+onmousemove = (e) => {
+//     if (DRAGGING) {
+//         DRAGGING = false;
+//         return;
+//     }
     material.uniforms.c.value = new THREE.Vector2((e.pageX - innerWidth / 2) * 2 / innerWidth, (innerHeight / 2 - e.pageY) * 2 / innerHeight);
     render();
 }
 
-onmousedown = (e) => {
-    MOUSEDOWN = true;
-    DRAGSTART = new THREE.Vector2(e.pageX, e.pageY);
-    INITCENTER = material.uniforms.center.value.clone();
-}
+// onmousedown = (e) => {
+//     MOUSEDOWN = true;
+//     DRAGSTART = new THREE.Vector2(e.pageX, e.pageY);
+//     INITCENTER = material.uniforms.center.value.clone();
+// }
 
-onmousemove = (e) => {
-    if(MOUSEDOWN) {
-        DRAGGING = true;
-        let current = new THREE.Vector2(e.pageX, e.pageY);
-        let move = current.sub(DRAGSTART);
-        move.y *= -1;
-        move = move.divideScalar(innerHeight / material.uniforms.size.value);
-        console.log("Move: ", move.x, move.y);
-        console.log("INIT: ", INITCENTER.x, INITCENTER.y);
-        material.uniforms.center.value.subVectors(INITCENTER, move);
-        //console.log("Value: ", value.x, value.y);
-        render();
-    }
-}
+// onmousemove = (e) => {
+//     if(MOUSEDOWN) {
+//         DRAGGING = true;
+//         let current = new THREE.Vector2(e.pageX, e.pageY);
+//         let move = current.sub(DRAGSTART);
+//         move.y *= -1;
+//         move = move.divideScalar(innerHeight / material.uniforms.size.value);
+//         console.log("Move: ", move.x, move.y);
+//         console.log("INIT: ", INITCENTER.x, INITCENTER.y);
+//         material.uniforms.center.value.subVectors(INITCENTER, move);
+//         //console.log("Value: ", value.x, value.y);
+//         render();
+//     }
+// }
 
-onmouseup = (e) => {
-    MOUSEDOWN = false;
-    DRAGSTART = null;
-    INITCENTER = null;
-}
+// onmouseup = (e) => {
+//     MOUSEDOWN = false;
+//     DRAGSTART = null;
+//     INITCENTER = null;
+// }
